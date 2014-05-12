@@ -20,7 +20,7 @@ class CommentTableSeeder extends Seeder
 
 		Comment::create(array(
 			'author' => 'Holly Lloyd',
-			'text' => 'I am a master of Laravel and Angular.'
+			'text' => 'I am a master of Laravel and Ractive.'
 		));
 	}
 

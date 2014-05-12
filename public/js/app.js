@@ -1,39 +1,31 @@
-var ractive,data;
 
-$.getJSON('/api/comments',data,function(data){
+var ractive,data,datas;
 
-    ractive = new Ractive({
-      el: 'container',
-      template: '#comment-template',
-      noIntro: true, // disable transitions during initial render
-      data: {
-        comments: data
-      }
-    });
-
-  
+$.ajax({
+  type:"get",
+  url:"/api/comments",
+  dataType: "json",
+  async: false,
+  success:function(data){
+    datas = data;
+  }
 });
-
-
-
-
-// sampleComments = [
-//   { author: 'Rich', text: 'FIRST!!!' },
-//   { author: 'anonymous', text: 'I disagree with the previous commenter' },
-//   { author: 'Samuel L. Ipsum', text: "If they don't know, that means we never told anyone. And if we never told anyone it means we never made it back. Hence we die down here. Just as a matter of deductive logic.\n\nYou think water moves fast? You should see ice. It moves like it has a mind. Like it knows it killed the world once and got a taste for murder." },
-//   { author: 'Jon Grubber', text: '**Hey you guys!** I can use [markdown](http://daringfireball.net/projects/markdown/) in my posts' }
-// ];
-
-
+ractive = new Ractive({
+  el: 'container',
+  template: '#comment-template',
+  noIntro: true, 
+  data: {
+    comments: datas
+  }
+});
 
 ractive.on( 'post', function ( event ) {
   var comment;
 
-  // stop the page reloading
+  // 阻止页面重新加载
   event.original.preventDefault();
 
-  // we can just grab the comment data from the model, since
-  // two-way binding is enabled by default
+  // 获取输入的数据
   comment = {
     author: this.get( 'author' ),
     text: this.get( 'text' )
@@ -41,12 +33,12 @@ ractive.on( 'post', function ( event ) {
 
   this.get( 'comments' ).push( comment );
 
-
-
-  // reset the form
+  // 重置
   document.activeElement.blur();
   this.set({ author: '', text: '' });
 
-  // fire an event so we can (for example) save the comment to a server
+  // 发送数据到服务端，存入数据库
   this.fire( 'new comment', comment );
+
+  $.post( '/api/comments', comment);
 });
